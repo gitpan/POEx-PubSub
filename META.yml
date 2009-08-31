@@ -1,0 +1,17 @@
+---
+abstract: 'A second generation publish/subscribe component for the POE framework'
+author:
+  - 'Nicholas Perez <nperez@cpan.org>'
+generated_by: 'Dist::Zilla::Plugin::MetaYAML version 1.092400'
+license: gpl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: POEx-PubSub
+requires:
+  MooseX::AttributeHelpers: 0.21
+  POE::API::Peek: 2.15
+  POEx::Role::SessionInstantiation: 0.092280
+resources:
+  repository: git://github.com/nperez/pcps.git
+version: 0.092430
