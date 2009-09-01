@@ -1,5 +1,5 @@
 package POEx::PubSub;
-our $VERSION = '0.092430';
+our $VERSION = '0.092440';
 
 
 #ABSTRACT: A second generation publish/subscribe component for the POE framework
@@ -318,7 +318,7 @@ POEx::PubSub - A second generation publish/subscribe component for the POE frame
 
 =head1 VERSION
 
-version 0.092430
+version 0.092440
 
 =head1 SYNOPSIS
 

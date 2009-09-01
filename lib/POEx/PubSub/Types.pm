@@ -1,5 +1,5 @@
 package POEx::PubSub::Types;
-our $VERSION = '0.092430';
+our $VERSION = '0.092440';
 
 
 #ABSTRACT: Exported Types for use within POEx::PubSub
@@ -51,7 +51,7 @@ POEx::PubSub::Types - Exported Types for use within POEx::PubSub
 
 =head1 VERSION
 
-version 0.092430
+version 0.092440
 
 =head1 DESCRIPTION
 

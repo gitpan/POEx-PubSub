@@ -13,7 +13,7 @@ my $build = Module::Build->new(
 "Nicholas\ Perez\ \<nperez\@cpan\.org\>",
   ],
   requires      => {
-    "POEx::Role::SessionInstantiation" => '0.092280',
+    "POEx::Role::SessionInstantiation" => '0.092440',
     "MooseX::AttributeHelpers" => '0.21',
     "POE::API::Peek" => '2.15',
   },

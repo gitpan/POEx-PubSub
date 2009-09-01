@@ -1,10 +1,9 @@
 package POEx::PubSub::Event;
-our $VERSION = '0.092430';
+our $VERSION = '0.092440';
 
 
 #ABSTRACT: An event abstraction for POEx::PubSub
 
-use 5.010;
 use MooseX::Declare;
 
 class POEx::PubSub::Event
@@ -96,7 +95,7 @@ POEx::PubSub::Event - An event abstraction for POEx::PubSub
 
 =head1 VERSION
 
-version 0.092430
+version 0.092440
 
 =head1 DESCRIPTION
 
