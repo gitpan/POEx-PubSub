@@ -11,7 +11,7 @@ name: POEx-PubSub
 requires:
   MooseX::AttributeHelpers: 0.21
   POE::API::Peek: 2.15
-  POEx::Role::SessionInstantiation: 0.092440
+  POEx::Role::SessionInstantiation: 0.092460
 resources:
   repository: git://github.com/nperez/pcps.git
-version: 0.092440
+version: 0.092460

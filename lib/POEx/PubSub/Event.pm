@@ -1,5 +1,5 @@
 package POEx::PubSub::Event;
-our $VERSION = '0.092440';
+our $VERSION = '0.092460';
 
 
 #ABSTRACT: An event abstraction for POEx::PubSub
@@ -95,7 +95,7 @@ POEx::PubSub::Event - An event abstraction for POEx::PubSub
 
 =head1 VERSION
 
-version 0.092440
+version 0.092460
 
 =head1 DESCRIPTION
 
