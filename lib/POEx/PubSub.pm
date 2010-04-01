@@ -1,6 +1,5 @@
 package POEx::PubSub;
-our $VERSION = '0.092460';
-
+$POEx::PubSub::VERSION = '1.100910';
 
 #ABSTRACT: A second generation publish/subscribe component for the POE framework
 
@@ -18,7 +17,6 @@ class POEx::PubSub
     use MooseX::Types;
     use MooseX::Types::Moose(':all');
     use POEx::Types(':all');
-    use MooseX::AttributeHelpers;
     
     sub import
     {
@@ -40,19 +38,19 @@ class POEx::PubSub
 
     has _events => 
     (
-        metaclass   => 'MooseX::AttributeHelpers::Collection::Hash',
+        traits      => ['Hash'],
         is          => 'rw', 
         isa         => HashRef[class_type('POEx::PubSub::Event')],
         clearer     => '_clear__events',
         default     => sub { {} },
         lazy        => 1,
-        provides    =>
+        handles     =>
         {
-            values  => 'all_events',
-            set     => 'add_event',
-            delete  => 'remove_event',
-            get     => 'get_event',
-            count   => 'has_events',
+            all_events => 'values',
+            add_event => 'set',
+            remove_event => 'delete',
+            get_event => 'get',
+            has_events => 'count',
         }
     );
 
@@ -309,7 +307,6 @@ class POEx::PubSub
 1;
 
 
-
 =pod
 
 =head1 NAME
@@ -318,13 +315,13 @@ POEx::PubSub - A second generation publish/subscribe component for the POE frame
 
 =head1 VERSION
 
-version 0.092460
+version 1.100910
 
 =head1 SYNOPSIS
 
     #imports PUBLISH_INPUT and PUBLISH_OUTPUT
     use POEx::PubSub;
-
+    
     # Instantiate the publish/subscriber with the alias "pub"
     POEx::PubSub->new(alias => 'pub');
 
@@ -390,65 +387,49 @@ events. Firing a published event posts an event to each subscriber of that
 event. Publication and subscription can also be managed from an external
 session, but defaults to using the SENDER where possible.
 
-=head1 CLASS METHODS
-
-=over 4
-
-=item new()
-
-This is the constructor for the publish subscribe component. It accepts the
-same arguments as any class composed with POEx::Role::SessionInstantiation. 
-
-See POEx::Role::SessionInstantiation for details.
-
-=back 
-
-=head1 ATTRIBUTES
+=head1 PRIVATE_ATTRIBUTES
 
 =head2 _api_peek
-    $pubsub->_api_peek
+
+    is: ro, isa: class_type('POE::API::Peek')
 
 This is a private attribute for accessing POE::API::Peek.
 
 =head2 _events 
-    $pubsub->_events
 
 This is a private attribute for accessing the PubSub::Events stored in this 
-instance of PubSub.  
+instance of PubSub keyed by the event name. If events need to be accessed please use the provided methods:
 
-=head1 METHODS
+    {
+        all_events => 'values',
+        add_event => 'set',
+        remove_event => 'delete',
+        get_event => 'get',
+        has_events => 'count',
+    }
 
-=head2 _default(ArrayRef $args) is Event
+=head1 PUBLIC_METHODS
 
-After an event is published, the publisher may arbitrarily fire that event to
-this component and the subscribers will be notified by calling their respective
-return events with whatever arguments are passed by the publisher. The event 
-must be published, owned by the publisher, and have subscribers for the event
-to be propagated. If any of the subscribers no longer has a valid return event
-their subscriptions will be cancelled and a warning will be carp'd.
+=head2 destroy
 
-This overrides POEx::Role::SessionInstantiation::_default().
-
-
-
-=head2 destroy is Event
+    is Event
 
 This event will simply destroy any of its current events and remove any and all
 aliases this session may have picked up. This should free up the session for
 garbage collection.
 
+=head2 listing
 
-
-=head2 listing(SessionRefIdAliasInstantiation :$session?, Str :$return_event?) is Event returns (ArrayRef)
+    (SessionRefIdAliasInstantiation :$session?, Str :$return_event?) is Event returns (ArrayRef)
 
 To receive a listing of all the of the events inside of PubSub, you can either
 call this event and have it returned immediately, or return_event must be 
 provided and implemented in either the provided session or SENDER and the only
 argument to the return_event will be the events.
 
+=head2 publish
 
-
-=head2 publish(SessionRefIdAliasInstantiation :$session?, Str :$event_name!, PublishType :$publish_type?, Str :$input_handler?) is Event
+    (SessionRefIdAliasInstantiation :$session?, Str :$event_name!, PublishType :$publish_type?, Str :$input_handler?) is Event
 
 This is the event to use to publish events. The published event may not already
 be previously published. The event may be completely arbitrary and does not 
@@ -465,30 +446,43 @@ when no argument is supplied.
 Also, you can publish an event from an arbitrary session as long as you provide
 a session alias.
 
+=head2 subscribe
 
-
-=head2 subscribe(SessionRefIdAliasInstantiation :$session?, Str :$event_name, Str :$event_handler) is Event
+    (SessionRefIdAliasInstantiation :$session?, Str :$event_name, Str :$event_handler) is Event
 
 This event is used to subscribe to a published event. The event does not need
 to exist at the time of subscription to avoid chicken and egg scenarios. The
 event_handler must be implemented in either the provided session or in the 
 SENDER. 
 
+=head2 rescind
 
-
-=head2 rescind(SessionRefIdAliasInstantiation :$session?, Str :$event_name) is Event
+    (SessionRefIdAliasInstantiation :$session?, Str :$event_name) is Event
 
 Use this event to stop publication of an event. The event must be published by
 either the provided session or SENDER
 
+=head2 cancel
 
-
-=head2 cancel(SessionRefIdAliasInstantiation :$session?, Str :$event_name) is Event
+    (SessionRefIdAliasInstantiation :$session?, Str :$event_name) is Event
 
 Cancel subscriptions to events with this event. The event must contain the
 provided session or SENDER as a subscriber
 
+=head1 PRIVATE_METHODS
 
+=head2 _default
+
+    (ArrayRef $args) is Event
+
+After an event is published, the publisher may arbitrarily fire that event to
+this component and the subscribers will be notified by calling their respective
+return events with whatever arguments are passed by the publisher. The event 
+must be published, owned by the publisher, and have subscribers for the event
+to be propagated. If any of the subscribers no longer has a valid return event
+their subscriptions will be cancelled and a warning will be carp'd.
+
+This overrides POEx::Role::SessionInstantiation::_default().
 
 =head2 _has_event(SessionID :$session, Str :$event_name)
 
@@ -496,22 +490,18 @@ This is a private method used by PubSub to confirm the session has the stated
 event. If it is class that composed SessionInstantiation, it checks via MOP,
 otherwise it uses POE::API::Peek to accomplis the deed.
 
-
-
 =head1 AUTHOR
 
   Nicholas Perez <nperez@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2009 by Nicholas Perez.
+This software is copyright (c) 2010 by Nicholas Perez.
 
-This is free software, licensed under:
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-  The GNU General Public License, Version 3, June 2007
-
-=cut 
-
+=cut
 
 
 __END__

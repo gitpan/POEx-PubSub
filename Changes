@@ -1,6 +1,8 @@
-Revision history for POEx-PubSub: 0.092460
+Revision history for POEx-PubSub: 1.100910
 
-0.092460  2009-09-03 21:16:14 UTC
+1.100910  2010-04-01 03:25:25 America/Chicago
+
+1.1009100.092460  2009-09-03 21:16:14 UTC
         Update dep for POEx::Role::SessionInstantiation
 
 0.092440  2009-09-01 15:44:25 UTC

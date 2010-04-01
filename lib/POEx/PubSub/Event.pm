@@ -1,6 +1,5 @@
 package POEx::PubSub::Event;
-our $VERSION = '0.092460';
-
+$POEx::PubSub::Event::VERSION = '1.100910';
 
 #ABSTRACT: An event abstraction for POEx::PubSub
 
@@ -8,9 +7,9 @@ use MooseX::Declare;
 
 class POEx::PubSub::Event
 {
-    use MooseX::AttributeHelpers;
     use POEx::PubSub::Types(':all');
     use MooseX::Types::Moose(':all');
+
 
     has name =>
     (
@@ -20,24 +19,21 @@ class POEx::PubSub::Event
     );
 
 
-
-
-
     has subscribers =>
     (
-        metaclass   => 'Collection::Hash',
+        traits      => ['Hash'],
         is          => 'rw', 
         isa         => HashRef[Subscriber], 
         default     => sub { {} },
         lazy        => 1,
         clearer     => 'clear_subscribers',
-        provides    =>
+        handles     =>
         {
-            values  => 'all_subscribers',
-            count   => 'has_subscribers',
-            set     => 'add_subscriber',
-            delete  => 'remove_subscriber',
-            get     => 'get_subscriber',
+            all_subscribers => 'values',
+            has_subscribers => 'count',
+            add_subscriber => 'set',
+            remove_subscriber => 'delete',
+            get_subscriber => 'get',
         }
     );
 
@@ -86,7 +82,6 @@ class POEx::PubSub::Event
 
 
 
-
 =pod
 
 =head1 NAME
@@ -95,7 +90,7 @@ POEx::PubSub::Event - An event abstraction for POEx::PubSub
 
 =head1 VERSION
 
-version 0.092460
+version 1.100910
 
 =head1 DESCRIPTION
 
@@ -103,59 +98,46 @@ POEx::PubSub::Event is a simple abstraction for published and
 subscribed events within PubSub. When using the find_event method or the
 listing method from PubSub, you will receive this object.
 
-=head1 ATTRIBUTES
+=head1 PUBLIC_ATTRIBUTES
 
 =head2 name
 
+    is: rw, isa: Str, required: 1
+
 The name of the event.
 
+=head2 subscribers
 
+    traits: Hash, is: rw, isa: HashRef[Subscriber]
 
-=head2 subscribers, predicate => 'has_subscribers', clearer => 'clear_subscribers
+subscribers holds all of the subscribers to this event. Subscribers can be accessed via the following methods:
 
-The event's subscribers stored in a Set::Object
+    {
+        all_subscribers => 'values',
+        has_subscribers => 'count',
+        add_subscriber => 'set',
+        remove_subscriber => 'delete',
+        get_subscriber => 'get',
+    }
 
+=head2 publisher
 
-
-=head2 publisher, predicate => 'has_publisher'
+    is: rw, isa: Str
 
 The event's publisher.
 
+=head2 publishtype
 
+    is: rw, isa => PublishType
 
-=head2 publishtype, isa => PublishType
+The event's publish type. Defaults to +PUBLISH_OUTPUT.
 
-The event's publish type. 
+=head2 input
 
-
-
-=head2 input, predicate => 'has_input'
+    is: rw, isa: Str
 
 If the publishtype is set to PUBLISH_INPUT, this will indicate the input
 handling event that belongs to the publisher
-
-
-
-=head1 METHODS
-
-=head2 all_subscribers()
-
-This method is delegated to the subscribers attribute to return all of the
-subscribers for this event
-
-
-
-=head2 add_subscriber(Subscriber $sub)
-
-Add the supplied subscriber to the event
-
-
-
-=head2 remove_subscriber(Subscriber $sub)
-
-Remove the supplied subscriber from the event
-
-
 
 =head1 AUTHOR
 
@@ -163,14 +145,12 @@ Remove the supplied subscriber from the event
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2009 by Nicholas Perez.
+This software is copyright (c) 2010 by Nicholas Perez.
 
-This is free software, licensed under:
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-  The GNU General Public License, Version 3, June 2007
-
-=cut 
-
+=cut
 
 
 __END__

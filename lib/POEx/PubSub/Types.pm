@@ -1,6 +1,5 @@
 package POEx::PubSub::Types;
-our $VERSION = '0.092460';
-
+$POEx::PubSub::Types::VERSION = '1.100910';
 
 #ABSTRACT: Exported Types for use within POEx::PubSub
 
@@ -42,7 +41,6 @@ subtype Subscriber,
 
 
 
-
 =pod
 
 =head1 NAME
@@ -51,14 +49,25 @@ POEx::PubSub::Types - Exported Types for use within POEx::PubSub
 
 =head1 VERSION
 
-version 0.092460
+version 1.100910
 
 =head1 DESCRIPTION
 
 This modules exports the needed subtypes, coercions, and constants for PubSub
 and is based on Sub::Exporter, so see that module for options on importing.
 
+=head1 TYPES
 
+=head2 PublishType
+
+The publish type constraint applied to Events. Can either be PUBLISH_INPUT or 
+PUBLISH_OUTPUT
+
+=head2 Subscriber
+
+When manipulating subscribers in an Event, expect to receive a well formed hash
+with the keys 'session' and 'event' corresponding to the subscribers SessionID
+and their event handler, respectively
 
 =head1 CONSTANTS
 
@@ -70,39 +79,18 @@ This indicates the Event is an output event
 
 This indicates the Event is an input event
 
-
-
-=head1 TYPES
-
-=head2 PublishType
-
-The publish type constraint applied to Events. Can either be PUBLISH_INPUT or 
-PUBLISH_OUTPUT
-
-
-
-=head2 Subscriber
-
-When manipulating subscribers in an Event, expect to receive a well formed hash
-with the keys 'session' and 'event' corresponding to the subscribers SessionID
-and their event handler, respectively
-
-
-
 =head1 AUTHOR
 
   Nicholas Perez <nperez@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2009 by Nicholas Perez.
+This software is copyright (c) 2010 by Nicholas Perez.
 
-This is free software, licensed under:
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-  The GNU General Public License, Version 3, June 2007
-
-=cut 
-
+=cut
 
 
 __END__
