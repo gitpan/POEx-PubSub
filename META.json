@@ -1,0 +1,54 @@
+{
+   "abstract" : "A second generation publish/subscribe component for the POE framework",
+   "author" : [
+      "Nicholas Perez <nperez@cpan.org>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Dist::Zilla version 4.102341, CPAN::Meta::Converter version 2.102400",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "POEx-PubSub",
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "6.31"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Carp" : 0,
+            "Moose" : 0,
+            "MooseX::Declare" : 0,
+            "MooseX::Types" : 0,
+            "MooseX::Types::Moose" : 0,
+            "MooseX::Types::Structured" : 0,
+            "POE::API::Peek" : 0,
+            "POEx::Role::SessionInstantiation" : 0,
+            "POEx::Types" : 0,
+            "Sub::Exporter" : 0,
+            "aliased" : 0,
+            "constant" : 0
+         }
+      },
+      "test" : {
+         "requires" : {
+            "POE" : 0,
+            "Test::More" : 0
+         }
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/nperez/pcps.git"
+      }
+   },
+   "version" : "1.102740"
+}
+

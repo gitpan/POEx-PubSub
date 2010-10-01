@@ -1,12 +1,13 @@
 package POEx::PubSub::Event;
-$POEx::PubSub::Event::VERSION = '1.100910';
+BEGIN {
+  $POEx::PubSub::Event::VERSION = '1.102740';
+}
 
 #ABSTRACT: An event abstraction for POEx::PubSub
 
 use MooseX::Declare;
 
-class POEx::PubSub::Event
-{
+class POEx::PubSub::Event {
     use POEx::PubSub::Types(':all');
     use MooseX::Types::Moose(':all');
 
@@ -27,8 +28,7 @@ class POEx::PubSub::Event
         default     => sub { {} },
         lazy        => 1,
         clearer     => 'clear_subscribers',
-        handles     =>
-        {
+        handles     => {
             all_subscribers => 'values',
             has_subscribers => 'count',
             add_subscriber => 'set',
@@ -52,8 +52,7 @@ class POEx::PubSub::Event
         isa         => PublishType,
         default     => +PUBLISH_OUTPUT,
         trigger     => 
-        sub
-        { 
+        sub { 
             my ($self, $type) = @_;
             confess 'Cannot set publishtype to INPUT if there is no publisher' 
                 if $type == +PUBLISH_INPUT and not $self->has_publisher;
@@ -67,8 +66,7 @@ class POEx::PubSub::Event
         isa         => Str,
         predicate   => 'has_input',
         trigger     => 
-        sub
-        {
+        sub {
             my ($self) = @_;
             confess 'Cannot set input on Event if publishtype is OUTPUT'
                 if $self->publishtype == +PUBLISH_OUTPUT;
@@ -90,7 +88,7 @@ POEx::PubSub::Event - An event abstraction for POEx::PubSub
 
 =head1 VERSION
 
-version 1.100910
+version 1.102740
 
 =head1 DESCRIPTION
 
@@ -111,8 +109,7 @@ The name of the event.
     traits: Hash, is: rw, isa: HashRef[Subscriber]
 
 subscribers holds all of the subscribers to this event. Subscribers can be accessed via the following methods:
-
-    {
+ {
         all_subscribers => 'values',
         has_subscribers => 'count',
         add_subscriber => 'set',
@@ -141,7 +138,7 @@ handling event that belongs to the publisher
 
 =head1 AUTHOR
 
-  Nicholas Perez <nperez@cpan.org>
+Nicholas Perez <nperez@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 

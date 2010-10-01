@@ -7,7 +7,8 @@ build_requires:
   Test::More: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.31
-generated_by: 'Dist::Zilla version 2.100880'
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 4.102341, CPAN::Meta::Converter version 2.102400'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -28,4 +29,4 @@ requires:
   constant: 0
 resources:
   repository: git://github.com/nperez/pcps.git
-version: 1.100910
+version: 1.102740

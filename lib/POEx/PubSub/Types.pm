@@ -1,5 +1,7 @@
 package POEx::PubSub::Types;
-$POEx::PubSub::Types::VERSION = '1.100910';
+BEGIN {
+  $POEx::PubSub::Types::VERSION = '1.102740';
+}
 
 #ABSTRACT: Exported Types for use within POEx::PubSub
 
@@ -14,8 +16,7 @@ use POEx::Types(':all');
 use constant PUBLISH_OUTPUT => 2;
 use constant PUBLISH_INPUT  => -2;
 
-use Sub::Exporter -setup => 
-{ 
+use Sub::Exporter -setup => { 
     exports => 
     [ 
         qw/ 
@@ -49,7 +50,7 @@ POEx::PubSub::Types - Exported Types for use within POEx::PubSub
 
 =head1 VERSION
 
-version 1.100910
+version 1.102740
 
 =head1 DESCRIPTION
 
@@ -81,7 +82,7 @@ This indicates the Event is an input event
 
 =head1 AUTHOR
 
-  Nicholas Perez <nperez@cpan.org>
+Nicholas Perez <nperez@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 

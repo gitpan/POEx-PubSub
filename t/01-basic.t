@@ -12,29 +12,25 @@ my $stop = 0;
 
 POEx::PubSub->new(alias => $pubalias, options => { trace => 1, debug => 1});
 
-class PuppetMaster 
-{
+class PuppetMaster {
     with 'POEx::Role::SessionInstantiation';
     use aliased 'POEx::Role::Event';
     use Test::More;
     
-    after _start is Event
-    {
+    after _start is Event {
         $self->post($pubalias, 'publish', session => $publisher, event_name => 'yarg');
         $self->post($pubalias, 'subscribe', session => $subscriber, event_name => 'yarg', event_handler => 'foo');
         $self->post($publisher, 'blah', 'yarg');
     }
 }
 
-class Publisher
-{
+class Publisher {
     with 'POEx::Role::SessionInstantiation';
     use aliased 'POEx::Role::Event';
     use Test::More;
     use POEx::PubSub;
 
-    after _start is Event
-    {
+    after _start is Event {
         $self->post($pubalias, 'publish', event_name => 'step1');
         $self->post($pubalias, 'publish', event_name => 'step2');
         $self->post($pubalias, 'publish', event_name => 'step3');
@@ -49,50 +45,42 @@ class Publisher
         );
     }
 
-    method bar_input (Int $arg) is Event
-    {
+    method bar_input (Int $arg) is Event {
         pass('bar fired: '. $arg);
         
-        if($arg == 4)
-        {
+        if($arg == 4) {
             $stop = 1;
             return;
         }
-        else
-        {
+        else {
             $self->post($pubalias, 'step'.$arg, $arg);
         }
     }
     
-    method blah(Str $event) is Event
-    {
+    method blah(Str $event) is Event {
         pass('blah fired');
         $self->post($pubalias, $event);
         $self->yield('bar_input', 1);
     }
 }
 
-class Subscriber
-{
+class Subscriber {
     with 'POEx::Role::SessionInstantiation';
     use aliased 'POEx::Role::Event';
     use Test::More;
 
-    after _start is Event
-    {
+    after _start is Event {
         $self->post($pubalias, 'subscribe', event_name => 'step1', event_handler => 'handler');
         $self->post($pubalias, 'subscribe', event_name => 'step2', event_handler => 'handler');
         $self->post($pubalias, 'subscribe', event_name => 'step3', event_handler => 'handler');
     }
 
-    method handler(Int $arg) is Event
-    {
+    method handler(Int $arg) is Event {
         pass('handler fired: '.$arg);
         $self->post($pubalias, 'bar', ++$arg);
     }
 
-    method foo is Event
-    {
+    method foo is Event {
         pass('foo fired');
     }
 }

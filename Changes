@@ -1,8 +1,10 @@
-Revision history for POEx-PubSub: 1.100910
+Revision history for POEx-PubSub: 1.102740
+
+1.102740  2010-10-01 14:55:36 America/Chicago
+        Update dist.ini and weaver.ini to the latest
+        Move braces to work around MXD bug in latest perls
 
 1.100910  2010-04-01 03:25:25 America/Chicago
-
-1.1009100.092460  2009-09-03 21:16:14 UTC
         Update dep for POEx::Role::SessionInstantiation
 
 0.092440  2009-09-01 15:44:25 UTC

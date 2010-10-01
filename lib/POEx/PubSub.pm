@@ -1,13 +1,14 @@
 package POEx::PubSub;
-$POEx::PubSub::VERSION = '1.100910';
+BEGIN {
+  $POEx::PubSub::VERSION = '1.102740';
+}
 
 #ABSTRACT: A second generation publish/subscribe component for the POE framework
 
 
 use MooseX::Declare;
 
-class POEx::PubSub
-{
+class POEx::PubSub {
     use POEx::PubSub::Event;
     with 'POEx::Role::SessionInstantiation';
     use aliased 'POEx::Role::Event';
@@ -18,8 +19,7 @@ class POEx::PubSub
     use MooseX::Types::Moose(':all');
     use POEx::Types(':all');
     
-    sub import
-    {
+    sub import {
         no strict 'refs';
         my $caller = caller();
         *{ $caller . '::PUBLISH_INPUT' } = \&PUBLISH_INPUT;
@@ -44,8 +44,7 @@ class POEx::PubSub
         clearer     => '_clear__events',
         default     => sub { {} },
         lazy        => 1,
-        handles     =>
-        {
+        handles     => {
             all_events => 'values',
             add_event => 'set',
             remove_event => 'delete',
@@ -55,34 +54,27 @@ class POEx::PubSub
     );
 
 
-    method _default(ArrayRef $args) is Event
-    {
+    method _default(ArrayRef $args) is Event {
         my $poe = $self->poe;
         my $state = $poe->state;
         my $warn = $self->options->{'debug'};
 
-        if(my $event = $self->get_event($state))
-        {
-            if($event->publishtype == +PUBLISH_OUTPUT)
-            {
+        if(my $event = $self->get_event($state)) {
+            if($event->publishtype == +PUBLISH_OUTPUT) {
                 my $sender = $poe->sender->ID;
-                if(!$event->has_publisher || !$event->publisher == $sender)
-                {
+                if(!$event->has_publisher || !$event->publisher == $sender) {
                     carp("Event [ $event ] is not owned by Sender: " . $sender) if $warn;
                     return;
                 }
 
-                if(!$event->has_subscribers)
-                {
+                if(!$event->has_subscribers) {
                     carp("Event[ $event ] currently has no subscribers") if $warn;
                     return;
                 }
 
-                foreach my $subscriber ($event->all_subscribers)
-                {
+                foreach my $subscriber ($event->all_subscribers) {
                     my ($s_session, $s_event) = @{ $subscriber }{'session', 'event'};
-                    if(!$self->_has_event(session => $s_session, event_name => $s_event))
-                    {
+                    if(!$self->_has_event(session => $s_session, event_name => $s_event)) {
                         carp("$s_session no longer has $s_event in their events") if $warn;
                         $self->remove_subscriber($s_session);
                     }
@@ -91,39 +83,33 @@ class POEx::PubSub
                 }
                 return;
             }
-            else
-            {
+            else {
                 $self->post(
                     $poe->kernel->ID_id_to_session($event->publisher), 
                     $event->input, 
                     @$args);
             }
         }
-        else
-        {
+        else {
             carp("Event [ $state ] does not currently exist") if $warn;
             return;
         }
     }
 
 
-    method destroy is Event
-    {
+    method destroy is Event {
         $self->_clear__events;
         my $kernel = $self->poe->kernel;
         $kernel->alias_remove($_) for $kernel->alias_list();
     }
 
 
-    method listing(SessionRefIdAliasInstantiation :$session?, Str :$return_event?) is Event returns (ArrayRef)
-    {
-        if($return_event && $session)
-        {
+    method listing(SessionRefIdAliasInstantiation :$session?, Str :$return_event?) is Event returns (ArrayRef) {
+        if($return_event && $session) {
             $session ||= $self->poe->sender->ID;
             $session = is_SessionID($session) ? $session : to_SessionID($session) or confess("Unable to coerce $session to SessionID");
             
-            if(!$self->_has_event(session => $session, event_name => $return_event))
-            {
+            if(!$self->_has_event(session => $session, event_name => $return_event)) {
                 carp("$session must own the $return_event event") if $self->options->{'debug'}; 
                 return;
             }
@@ -136,36 +122,29 @@ class POEx::PubSub
     }
 
 
-    method publish(SessionRefIdAliasInstantiation :$session?, Str :$event_name!, PublishType :$publish_type?, Str :$input_handler?) is Event
-    {
+    method publish(SessionRefIdAliasInstantiation :$session?, Str :$event_name!, PublishType :$publish_type?, Str :$input_handler?) is Event {
         $session ||= $self->poe->sender->ID;
         $session = is_SessionID($session) ? $session : to_SessionID($session) or confess("Unable to coerce $session to SessionID");
         my $warn = $self->options->{'debug'};
 
-        if(my $event = $self->get_event($event_name))
-        {
-            if($event->has_publisher)
-            {
+        if(my $event = $self->get_event($event_name)) {
+            if($event->has_publisher) {
                 carp("Event [ $event_name ] already has a publisher") if $warn;
                 return;
             }
             
-            if(defined($publish_type) && $publish_type == +PUBLISH_INPUT)
-            {
-                if(!defined($input_handler))
-                {
+            if(defined($publish_type) && $publish_type == +PUBLISH_INPUT) {
+                if(!defined($input_handler)) {
                     carp('$input_handler argument is required for publishing an input event') if $warn;
                     return;
                 }
 
-                if(!$self->_has_event(session => $session, event_name => $input_handler))
-                {
+                if(!$self->_has_event(session => $session, event_name => $input_handler)) {
                     carp("$session must own the $input_handler event") if $warn;
                     return;
                 }
 
-                if($event->has_subscribers)
-                {
+                if($event->has_subscribers) {
                     carp("Event [ $event_name ] already has subscribers and precludes publishing") if $warn;
                     return;
                 }
@@ -173,20 +152,16 @@ class POEx::PubSub
 
             $event->publisher($session);
         }
-        else
-        {
+        else {
             my %args;
 
-            if(defined($publish_type) && $publish_type == +PUBLISH_INPUT)
-            {
-                if(!defined($input_handler))
-                {
+            if(defined($publish_type) && $publish_type == +PUBLISH_INPUT) {
+                if(!defined($input_handler)) {
                     carp('$input_handler argument is required for publishing an input event') if $warn;
                     return;
                 }
 
-                if(!$self->_has_event(session => $session, event_name => $input_handler))
-                {
+                if(!$self->_has_event(session => $session, event_name => $input_handler)) {
                     carp("$session must own the $input_handler event") if $warn;
                     return;
                 }
@@ -205,30 +180,25 @@ class POEx::PubSub
         }
     }
 
-    method subscribe(SessionRefIdAliasInstantiation :$session?, Str :$event_name, Str :$event_handler) is Event
-    {
+    method subscribe(SessionRefIdAliasInstantiation :$session?, Str :$event_name, Str :$event_handler) is Event {
         $session ||= $self->poe->sender->ID;
         $session = is_SessionID($session) ? $session : to_SessionID($session) or confess("Unable to coerce $session to SessionID");
         my $warn = $self->options->{'debug'};
 
-        if(my $event = $self->get_event($event_name))
-        {
-            if($event->publishtype == +PUBLISH_INPUT)
-            {
+        if(my $event = $self->get_event($event_name)) {
+            if($event->publishtype == +PUBLISH_INPUT) {
                 carp("Event[ $event_name ] is not an output event") if $warn;
                 return;
             }
 
-            if(!$self->_has_event(session => $session, event_name => $event_handler))
-            {
+            if(!$self->_has_event(session => $session, event_name => $event_handler)) {
                 carp("$session must own the $event_handler event") if $warn;
                 return;
             }
 
             $event->add_subscriber($session => {session => $session, event => $event_handler});
         }
-        else
-        {
+        else {
             my $event = 'POEx::PubSub::Event'->new(name => $event_name);
             $event->add_subscriber($session => {session => $session, event => $event_handler});
             $self->add_event($event_name, $event);
@@ -236,69 +206,56 @@ class POEx::PubSub
     }
 
 
-    method rescind(SessionRefIdAliasInstantiation :$session?, Str :$event_name) is Event
-    {
+    method rescind(SessionRefIdAliasInstantiation :$session?, Str :$event_name) is Event {
         $session ||= $self->poe->sender->ID;
         $session = is_SessionID($session) ? $session : to_SessionID($session) or confess("Unable to coerce $session to SessionID");
         my $warn = $self->options->{'debug'};
 
-        if(my $event = $self->get_event($event_name))
-        {
-            if($event->publisher != $session)
-            {
+        if(my $event = $self->get_event($event_name)) {
+            if($event->publisher != $session) {
                 carp("Event[ $event_name ] is not owned by $session") if $warn;
             }
 
-            if($event->has_subscribers)
-            {
+            if($event->has_subscribers) {
                 carp("Event[ $event_name ] currently has subscribers, but removing anyway") if $warn;
             }
             
             $self->remove_event($event_name);
         }
-        else
-        {
+        else {
             carp("Event[ $event_name ] does not exist") if $warn;
         }
     }
 
 
-    method cancel(SessionRefIdAliasInstantiation :$session?, Str :$event_name) is Event
-    {
+    method cancel(SessionRefIdAliasInstantiation :$session?, Str :$event_name) is Event {
         $session ||= $self->poe->sender->ID;
         $session = is_SessionID($session) ? $session : to_SessionID($session) or confess("Unable to coerce $session to SessionID");
         my $warn = $self->options->{'debug'};
         
-        if(my $event = $self->get_event($event_name))
-        {
-            if(my $subscriber = $event->get_subscriber($session))
-            {
+        if(my $event = $self->get_event($event_name)) {
+            if(my $subscriber = $event->get_subscriber($session)) {
                 $event->remove_subscriber($session);
             }
-            else
-            {
+            else {
                 carp("$session must be subscribed to the $event_name event") if $warn;
             }
         }
-        else
-        {
+        else {
             carp("Event[ $event_name ] does not exist") if $warn;
         }
     }
 
 
-    method _has_event(SessionID :$session, Str :$event_name)
-    {
+    method _has_event(SessionID :$session, Str :$event_name) {
         return 0 if not defined($event_name);
 
         my $session_ref = $self->poe->kernel->ID_id_to_session($session);
 
-        if($session_ref->isa('Moose::Object') && $session_ref->does('POEx::Role::SessionInstantiation'))
-        {
+        if($session_ref->isa('Moose::Object') && $session_ref->does('POEx::Role::SessionInstantiation')) {
             return defined($session_ref->meta->get_method($event_name));
         }
-        else
-        {
+        else {
             return scalar ( grep { /$event_name/ } $self->_api_peek->session_event_list($session_ref));
         }
     }
@@ -315,7 +272,7 @@ POEx::PubSub - A second generation publish/subscribe component for the POE frame
 
 =head1 VERSION
 
-version 1.100910
+version 1.102740
 
 =head1 SYNOPSIS
 
@@ -399,8 +356,7 @@ This is a private attribute for accessing POE::API::Peek.
 
 This is a private attribute for accessing the PubSub::Events stored in this 
 instance of PubSub keyed by the event name. If events need to be accessed please use the provided methods:
-
-    {
+ {
         all_events => 'values',
         add_event => 'set',
         remove_event => 'delete',
@@ -492,7 +448,7 @@ otherwise it uses POE::API::Peek to accomplis the deed.
 
 =head1 AUTHOR
 
-  Nicholas Perez <nperez@cpan.org>
+Nicholas Perez <nperez@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
